@@ -1,6 +1,13 @@
 # Somfy Remote
 An Arduino Sketch able to emulate a Somfy remote control.
 
+** Difference with Nichduino/Somfy_Remote**
+This project aims to emulate multiple remote addresses and to make the arduino work using GPIO pins instead of serial input.
+This make the sketch usable for home automation without any OS.
+
+The sketch is working with the rflink/arduino setup from nodo-shop.nl
+
+** Original Readme **
 
 If you want to learn more about the Somfy RTS protocol, check out [Pushtack](https://pushstack.wordpress.com/somfy-rts-protocol/).
 
