@@ -2,6 +2,7 @@
 An Arduino Sketch able to emulate a Somfy remote control.
 
 **Difference with Nichduino/Somfy_Remote**
+
 This project aims to emulate multiple remote addresses and to make the arduino work using GPIO pins instead of serial input.
 This make the sketch usable for home automation without any OS.
 
