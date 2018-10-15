@@ -49,9 +49,10 @@ byte io_port_down_state[sizeof(io_port_down)] = {0};
 byte io_port_up_state[sizeof(io_port_up)] = {0};
 
 // Initial rolling code for new addresses
-unsigned int newRollingCode = 10;
+unsigned int newRollingCode = 1;
 
 byte last_frame[sizeof(remotes)][7];
+byte frame[7];
 
 void SendCommand(byte *frame, byte sync);
 void SendFrame (byte *frame, int remote_id, int repeat_count);
@@ -67,8 +68,10 @@ void setup() {
   }
 
   for (int i = 0; i < sizeof(io_port_down) / sizeof(io_port_down[0]); i++) {
-    pinMode(io_port_down[i], INPUT);
-    pinMode(io_port_up[i], INPUT);
+    pinMode(io_port_down[i], INPUT_PULLUP);
+    pinMode(io_port_up[i], INPUT_PULLUP);
+    digitalWrite(io_port_down[i], HIGH);
+    digitalWrite(io_port_up[i], HIGH);
   }
 
   pinMode(PORT_TX, OUTPUT);
@@ -90,16 +93,14 @@ void setup() {
 }
 
 void loop() {
-  boolean send_frame = false;
   int remote_id = -1;
   int repeat_count = 2; // by default resend every frame 2 times to make sure it's received correctly.
-  byte frame[7];
 
   if (Serial.available() > 0) {
     remote_id = Serial.parseInt();
     Serial.print("Input recieved:"); Serial.println(remote_id);
     char serie = (char)Serial.read();
-
+  
     if (serie == 'm' || serie == 'u' || serie == 'h') {
       Serial.println("Monte"); // Somfy is a French company, after all.
       BuildFrame(frame, remote_id, HAUT);
@@ -131,13 +132,13 @@ void loop() {
       Serial.println("Custom code");
       BuildFrame(frame, remote_id, serie);
     }
-
+  
     SendFrame(frame, remote_id, repeat_count);
   } else {
     boolean state_changed = false;
     
     for (int remote_id = 0; remote_id < sizeof(io_port_down) / sizeof(io_port_down[0]) && remote_id < sizeof(remotes) / sizeof(remotes[0]); remote_id++) {
-      if (digitalRead(io_port_down[remote_id]) == HIGH) {
+      if (digitalRead(io_port_down[remote_id]) == LOW) {
         if (io_port_down_state[remote_id] == 0){
           Serial.println("Descend");
           BuildFrame(frame, remote_id, BAS);
@@ -150,7 +151,7 @@ void loop() {
           state_changed = true;
         }
       }
-      if (digitalRead(io_port_up[remote_id]) == HIGH) {
+      if (digitalRead(io_port_up[remote_id]) == LOW) {
         if (io_port_up_state[remote_id] == 0){
           Serial.println("Monte"); // Somfy is a French company, after all.
           BuildFrame(frame, remote_id, HAUT);
