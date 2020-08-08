@@ -32,10 +32,10 @@
 #define PROG 0x8
 
 // Array of IO pins providing power to the RFLink shield
-const byte rflink_power_port[] = {15, 16, 17, 18, 20, 21, 22, 23, 46 , 47 , 48 , 49, 50, 51 , 52, 53}; //24, 25,
+const byte rflink_power_port[] = {15, 16, 17, 18, 20, 21, 22, 23, 46 , 47 , 48 , 49, 50, 51 , 52, 53};  
 
 // Array of simulated Somfy RTS addresses
-const unsigned long remotes[] = {0x121301, 0x121302, 0x121303, 0x121304};
+const unsigned long remotes[] = {0x121301, 0x121302, 0x121303, 0x121304, 0x121305, 0x121306, 0x121307, 0x121308, 0x121309};
 
 // Dynamic arrays to store and maintain the rolling codes in the system eeprom
 int eeprom_addresses[sizeof(remotes)] = {0};
@@ -92,9 +92,8 @@ void setup() {
   }
 }
 
-void loop() {
   int remote_id = -1;
-  int repeat_count = 2; // by default resend every frame 2 times to make sure it's received correctly.
+  int repeat_count = 5; // by default resend every frame 2 times to make sure it's received correctly.
 
   if (Serial.available() > 0) {
     remote_id = Serial.parseInt();
@@ -116,7 +115,7 @@ void loop() {
     else if (serie == 'p') {
       Serial.println("Prog");
       BuildFrame(frame, remote_id, PROG);
-      repeat_count = 15; // Increase repeat_count to allow de-registration
+      repeat_count = 5; // Increase repeat_count to allow de-registration
     }
     //else if (serie == 'r') { //repeat last frame
     //  Serial.println("Repeating last frame");
@@ -224,8 +223,6 @@ void BuildFrame(byte *frame, int remote_id, byte button) {
     }
     Serial.print(frame[i], HEX); Serial.print(" ");
   }
-
-
   // Obfuscation: a XOR of all the bytes
   for (byte i = 1; i < 7; i++) {
     frame[i] ^= frame[i - 1];
