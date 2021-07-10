@@ -92,8 +92,9 @@ void setup() {
   }
 }
 
+void loop() {
   int remote_id = -1;
-  int repeat_count = 5; // by default resend every frame 2 times to make sure it's received correctly.
+  int repeat_count = 10; // by default resend every frame 2 times to make sure it's received correctly.
 
   if (Serial.available() > 0) {
     remote_id = Serial.parseInt();
